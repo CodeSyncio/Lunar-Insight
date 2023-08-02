@@ -5,7 +5,6 @@ use eframe::egui::Widget;
 use egui_extras::DatePickerButton;
 use reqwest;
 use serde_json;
-use serde_json::to_string;
 
 fn get_moon_data(
     key: String,
@@ -26,12 +25,11 @@ fn main() -> Result<(), eframe::Error> {
     dotenv().ok();
     let api_key = std::env::var("API_KEY").expect("API_KEY has to be set in your .env file.");
     let options = eframe::NativeOptions {
-        initial_window_size: Some(egui::vec2(500.0, 400.0)),
+        initial_window_size: Some(egui::vec2(450.0, 500.0)),
         ..Default::default()
     };
 
     let mut city = "Paris".to_owned();
-    let mut age = 42;
     let mut selected_date = chrono::Local::today().naive_local();
 
     let mut moon_phase: String = "".to_string();
@@ -43,7 +41,9 @@ fn main() -> Result<(), eframe::Error> {
     let mut sun_set: String = "".to_string();
     let mut sun_up_text: String = "".to_string();
 
+    let mut country: String = "".to_string();
     let mut region: String = "".to_string();
+    let mut local_time: String = "".to_string();
 
     let mut error: String = "".to_string();
 
@@ -60,7 +60,7 @@ fn main() -> Result<(), eframe::Error> {
                     .labelled_by(name_label.id);
             });
             ui.horizontal(|ui| {
-                let date_label = ui.label("Date: ");
+                ui.label("Date: ");
 
                 DatePickerButton::new(&mut selected_date)
                     .calendar(true)
@@ -82,16 +82,16 @@ fn main() -> Result<(), eframe::Error> {
                     })
                 })
                 .show(ui, |ui| {
-                    ui.label("Sun rise: :");
-                    ui.label(format!("{}", sun_rise));
+                    ui.label("Country: ");
+                    ui.label(format!("{}", country));
                     ui.end_row();
 
-                    ui.label("Sun set");
-                    ui.label(format!("{}", sun_set));
+                    ui.label("Region: ");
+                    ui.label(format!("{}", region));
                     ui.end_row();
 
-                    ui.label("Sun visible?");
-                    ui.label(format!("{}", sun_up_text));
+                    ui.label("Local time: ");
+                    ui.label(format!("{}", local_time));
                     ui.end_row();
                 });
 
@@ -164,6 +164,21 @@ fn main() -> Result<(), eframe::Error> {
                     error = data.err().unwrap().to_string()
                 } else {
                     if data.as_ref().unwrap()["error"].is_null() {
+                        country = data.as_ref().unwrap()["location"]["country"]
+                            .as_str()
+                            .unwrap_or_default()
+                            .to_string();
+
+                        region = data.as_ref().unwrap()["location"]["region"]
+                            .as_str()
+                            .unwrap_or_default()
+                            .to_string();
+
+                        local_time = data.as_ref().unwrap()["location"]["localtime"]
+                            .as_str()
+                            .unwrap_or_default()
+                            .to_string();
+
                         moon_phase = data.as_ref().unwrap()["astronomy"]["astro"]["moon_phase"]
                             .as_str()
                             .unwrap_or_default()
