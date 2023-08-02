@@ -1,4 +1,4 @@
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")] // hide console window on Windows in release
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 use dotenv::dotenv;
 use eframe::egui;
 use eframe::egui::Widget;
@@ -50,10 +50,10 @@ fn main() -> Result<(), eframe::Error> {
     let label_background_color = egui::Color32::from_rgb(79, 79, 79);
     let label_background_color2 = egui::Color32::from_rgb(61, 61, 61);
 
-    eframe::run_simple_native("MoonStatus", options, move |ctx, _frame| {
+    eframe::run_simple_native("Lunar Insight", options, move |ctx, _frame| {
         egui::CentralPanel::default().show(ctx, |ui| {
             ctx.set_pixels_per_point(1.2);
-            ui.heading("Moon Status");
+            ui.heading("Lunar Insight");
             ui.horizontal(|ui| {
                 let name_label = ui.label("City: ");
                 ui.text_edit_singleline(&mut city)
@@ -67,7 +67,7 @@ fn main() -> Result<(), eframe::Error> {
                     .ui(ui);
             });
             ui.label("");
-            let submit_button = ui.add(egui::Button::new("Moon status"));
+            let submit_button = ui.add(egui::Button::new("Get data"));
 
             ui.label("");
             egui::Grid::new("basic_info")
